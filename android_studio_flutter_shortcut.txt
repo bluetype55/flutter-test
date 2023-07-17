@@ -1,0 +1,2 @@
+Ctrl + Alt + L : Format
+Alt + Enter : Intention Action
