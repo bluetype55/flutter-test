@@ -5,38 +5,56 @@ void main() {
     MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          actions: [
-            IconButton(
-              icon: Icon(Icons.home),
-              onPressed: () {
-                print('Tab!');
-              },
-            ),
-            Icon(Icons.play_arrow),
-          ],
+          title: Text('Study to Container'),
+          centerTitle: true,
         ),
-        body: TestWidget(),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.bug_report),
-          onPressed: () {
-            print('Tab! FAB!');
-          },
-        ),
+        body: CustomContainer(),
       ),
     ),
   );
 }
 
-class TestWidget extends StatelessWidget {
-  const TestWidget({super.key});
+class CustomContainer extends StatelessWidget {
+  const CustomContainer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return Container(
+      width: 300,
+      height: 300,
+      padding: EdgeInsets.fromLTRB(10, 12, 10, 12),
+      decoration: BoxDecoration(
+        color: Color(0xFF85D078),
+        border: Border.all(
+          color: Colors.red,
+          width: 5,
+          style: BorderStyle.solid,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.5),
+            offset: Offset(6, 6),
+            blurRadius:10,
+            spreadRadius:10,
+          ),
+          BoxShadow(
+            color: Colors.amber.shade300,
+            offset: Offset(-6, -6),
+            blurRadius:10,
+            spreadRadius:10,
+          ),
+        ],
+      ),
+      margin: EdgeInsets.symmetric(
+        vertical: 100,
+        horizontal: 100,
+      ),
       child: Center(
-        child: Text(
-          'Hello, Flutter',
-          style: TextStyle(color: Colors.black, fontSize: 40),
+        child: Container(
+          color: Colors.amber,
+          child: Text(
+              '000000000000000000000000000000000000000000000000000000000000000000'),
         ),
       ),
     );
