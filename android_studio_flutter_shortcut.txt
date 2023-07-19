@@ -1,3 +1,9 @@
 Ctrl + Alt + L : Format
 Alt + Enter : Intention Action
 Ctrl + Click : view source code
+Ctrl+O : Override Methods
+Ctrl+I : Implement Methods
+Ctrl+Y : delete line
+Ctrl+Shift+Z : redo
+Ctrl+Z : undo
+Ctrl+D : copy line
