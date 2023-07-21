@@ -5,7 +5,7 @@ void main() {
     MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Stateless VS Stateful'),
+          title: Text('Widget Lifecycle'),
           centerTitle: true,
         ),
         body: Body(),
@@ -19,75 +19,78 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
-        ExampleStateless(),
-        ExampleStateful(index: 3),
+        TestCheckBox(),
+        TestRadioButton(),
       ],
     );
   }
 }
 
-class ExampleStateless extends StatelessWidget {
-  const ExampleStateless({super.key});
+class TestCheckBox extends StatefulWidget {
+  const TestCheckBox({super.key});
+
+  @override
+  State<TestCheckBox> createState() => _TestCheckBoxState();
+}
+
+class TestRadioButton extends StatefulWidget {
+  const TestRadioButton({super.key});
+
+  @override
+  State<TestRadioButton> createState() => _TestRadioButtonState();
+}
+
+enum TestRadioValue {
+  test1,
+  test2,
+  test3;
+}
+
+class _TestRadioButtonState extends State<TestRadioButton> {
+  TestRadioButton? selectValue;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-        flex: 1,
-        child: Container(
-          color: Colors.red.shade300,
-        ));
+    return Column(
+      children: [
+        Radio(value: TestRadioValue.test1, groupValue: TestRadioValue, onChanged: (value) => selectValue = value!),
+        Radio(value: value, groupValue: groupValue, onChanged: onChanged),
+      ],
+    );
   }
 }
 
-class ExampleStateful extends StatefulWidget {
-  final int index;
-
-  const ExampleStateful({required this.index, super.key});
-
-  @override
-  State<ExampleStateful> createState() => _ExampleStatefulState();
-}
-
-class _ExampleStatefulState extends State<ExampleStateful> {
-  late int _index;
-  late TextEditingController textController;
+class _TestCheckBoxState extends State<TestCheckBox> {
+  late List<bool> values;
 
   @override
   void initState() {
     super.initState();
-    _index = widget.index;
-    textController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    textController.dispose();
-    super.dispose();
+    values = [false, false, false];
   }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      flex: 1,
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            if (_index == 20) {
-              _index = 0;
-              return;
-            }
-            _index++;
-          });
-        },
-        child: Container(
-          color: Colors.blue.withOpacity(_index / 20),
-          child: Center(
-            child: Text('$_index'),
-          ),
-        ),
-      ),
+    return Row(
+      children: [
+        Checkbox(
+            value: values[0],
+            onChanged: (value) => changeValue(0, value: value)),
+        Checkbox(
+            value: values[1],
+            onChanged: (value) => changeValue(1, value: value)),
+        Checkbox(
+            value: values[2],
+            onChanged: (value) => changeValue(2, value: value)),
+      ],
     );
+  }
+
+  void changeValue(int index, {bool? value = false}) {
+    setState(() {
+      values[index] = value!;
+    });
   }
 }
