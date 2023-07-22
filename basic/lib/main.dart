@@ -23,6 +23,7 @@ class Body extends StatelessWidget {
       children: [
         TestCheckBox(),
         TestRadioButton(),
+        TestSliderState(),
       ],
     );
   }
@@ -49,14 +50,35 @@ enum TestRadioValue {
 }
 
 class _TestRadioButtonState extends State<TestRadioButton> {
-  TestRadioButton? selectValue;
+  TestRadioValue? selectValue;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Radio(value: TestRadioValue.test1, groupValue: TestRadioValue, onChanged: (value) => selectValue = value!),
-        Radio(value: value, groupValue: groupValue, onChanged: onChanged),
+        ListTile(
+          leading: Radio<TestRadioValue>(
+            value: TestRadioValue.test1,
+            groupValue: selectValue,
+            onChanged: (value) => setState(() => selectValue = value!),
+          ),
+          title: Text(TestRadioValue.test1.name),
+          onTap: () => setState(() {
+            if (selectValue != TestRadioValue.test1) {
+              selectValue = TestRadioValue.test1;
+            }
+          }),
+        ),
+        Radio<TestRadioValue>(
+          value: TestRadioValue.test2,
+          groupValue: selectValue,
+          onChanged: (value) => setState(() => selectValue = value!),
+        ),
+        Radio<TestRadioValue>(
+          value: TestRadioValue.test3,
+          groupValue: selectValue,
+          onChanged: (value) => setState(() => selectValue = value!),
+        ),
       ],
     );
   }
@@ -92,5 +114,34 @@ class _TestCheckBoxState extends State<TestCheckBox> {
     setState(() {
       values[index] = value!;
     });
+  }
+}
+
+class TestSliderState extends StatefulWidget {
+  const TestSliderState({super.key});
+
+  @override
+  State<TestSliderState> createState() => _TestSliderStateState();
+}
+
+class _TestSliderStateState extends State<TestSliderState> {
+  double value = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text('${value.round()}'),
+        Slider(
+          value: value,
+          onChanged: (newValue) => setState(() => value = newValue),
+          divisions: 100,
+          max: 100,
+          min: 0,
+          label: value.round().toString(),
+          activeColor: Colors.red,
+        ),
+      ],
+    );
   }
 }
