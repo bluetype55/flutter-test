@@ -7,3 +7,4 @@ Ctrl+Y : delete line
 Ctrl+Shift+Z : redo
 Ctrl+Z : undo
 Ctrl+D : copy line
+Shift + F6 : Refactoring
