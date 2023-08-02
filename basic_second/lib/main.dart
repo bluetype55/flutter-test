@@ -1,7 +1,6 @@
-import 'package:basic/main%20-%20button.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void mina() {
   runApp(const MyApp());
 }
 
@@ -11,7 +10,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      title: 'on bording',
       home: MyPage(),
     );
   }
@@ -22,10 +20,6 @@ class MyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mypage'),
-      ),
-    );
+    return const Scaffold();
   }
 }
