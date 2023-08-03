@@ -1,4 +1,4 @@
-import 'package:basic_second/main.dart';
+import 'package:basic_second/main - onboarding.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
