@@ -1,3 +1,4 @@
+import 'package:basic_second/animal_page.dart';
 import 'package:basic_second/model.dart';
 import 'package:flutter/material.dart';
 
@@ -78,6 +79,16 @@ class _MyPageState extends State<MyPage> {
                 width: 50,
                 child: Image.asset(animalData[index].imgPath),
               ),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => AnimalPage(
+                      animal: animalData[index],
+                    ),
+                  ),
+                );
+                debugPrint(animalData[index].name);
+              },
             ),
           );
         },
