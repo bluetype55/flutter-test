@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lotto_app/game.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,9 +10,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Lotto_app',
-      home: MyHomePage(),
+      routes: {'/game': (context) => const Game(gameCnt: 1)},
+      home: const MyHomePage(),
     );
   }
 }
@@ -37,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
         color: Colors.white,
         child: Column(
           children: [
-            const SizedBox(height: 30),
+            const SizedBox(height: 75),
             Image.asset('image/lotto.jpeg'),
             const SizedBox(height: 50),
             const Text(
@@ -68,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   width: 100,
                   child: Center(
                     child: Text(
-                      '$gameCnt',
+                      '$gameCnt회',
                       style: const TextStyle(fontSize: 54),
                     ),
                   ),
@@ -89,8 +91,20 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             const SizedBox(height: 50),
             ElevatedButton(
-              onPressed: () {},
-              child: const Text('다음'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Game(
+                      gameCnt: gameCnt,
+                    ),
+                  ),
+                );
+              },
+              child: const Text(
+                '다음',
+                style: TextStyle(fontSize: 20),
+              ),
             ),
           ],
         ),
