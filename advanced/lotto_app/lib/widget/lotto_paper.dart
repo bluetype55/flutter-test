@@ -17,20 +17,26 @@ class LottoPaper extends StatelessWidget {
             Row(
               children: List.generate(5, (index) => OnePaper(index: index)),
             ),
-            Padding(
-              padding: const EdgeInsets.all(75.0),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey.shade300,
-                  shape: const CircleBorder(eccentricity: 0.0),
-                  fixedSize: const Size(100, 100),
+            Column(
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 75, vertical: 20),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey.shade300,
+                      shape: const CircleBorder(eccentricity: 0.0),
+                      fixedSize: const Size(100, 100),
+                    ),
+                    onPressed: () {},
+                    child: const Icon(
+                      Icons.arrow_forward,
+                      size: 50,
+                    ),
+                  ),
                 ),
-                onPressed: () {},
-                child: const Icon(
-                  Icons.arrow_forward,
-                  size: 50,
-                ),
-              ),
+                const Text('복권 발행'),
+              ],
             ),
           ],
         ),
@@ -39,13 +45,24 @@ class LottoPaper extends StatelessWidget {
   }
 }
 
-class OnePaper extends StatelessWidget {
+class OnePaper extends StatefulWidget {
   final int index;
-  final List<String> alphabet = ['A', 'B', 'C', 'D', 'E'];
-  OnePaper({
+
+  const OnePaper({
     required this.index,
     super.key,
   });
+
+  @override
+  State<OnePaper> createState() => _OnePaperState();
+}
+
+class _OnePaperState extends State<OnePaper> {
+  final List<String> alphabet = ['A', 'B', 'C', 'D', 'E'];
+
+  bool autoChecked = false;
+
+  Color autoColor = Colors.white;
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +107,7 @@ class OnePaper extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 10),
                             child: Text(
-                              alphabet[index],
+                              alphabet[widget.index],
                               style: const TextStyle(
                                 fontSize: 36,
                                 fontWeight: FontWeight.bold,
@@ -129,38 +146,50 @@ class OnePaper extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 5,
-                              width: 30,
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  top: BorderSide(
-                                      width: 2, color: Colors.pinkAccent),
-                                  left: BorderSide(
-                                      width: 2, color: Colors.pinkAccent),
-                                  right: BorderSide(
-                                      width: 2, color: Colors.pinkAccent),
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              autoChecked = !autoChecked;
+                              if (autoChecked) {
+                                autoColor = Colors.black;
+                              } else {
+                                autoColor = Colors.white;
+                              }
+                            });
+                          },
+                          child: Column(
+                            children: [
+                              Container(
+                                height: 5,
+                                width: 30,
+                                decoration: const BoxDecoration(
+                                  border: Border(
+                                    top: BorderSide(
+                                        width: 2, color: Colors.pinkAccent),
+                                    left: BorderSide(
+                                        width: 2, color: Colors.pinkAccent),
+                                    right: BorderSide(
+                                        width: 2, color: Colors.pinkAccent),
+                                  ),
                                 ),
                               ),
-                            ),
-                            const Icon(Icons.check, color: Colors.white),
-                            Container(
-                              height: 5,
-                              width: 30,
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                      width: 2, color: Colors.pinkAccent),
-                                  left: BorderSide(
-                                      width: 2, color: Colors.pinkAccent),
-                                  right: BorderSide(
-                                      width: 2, color: Colors.pinkAccent),
+                              Icon(Icons.check, color: autoColor),
+                              Container(
+                                height: 5,
+                                width: 30,
+                                decoration: const BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                        width: 2, color: Colors.pinkAccent),
+                                    left: BorderSide(
+                                        width: 2, color: Colors.pinkAccent),
+                                    right: BorderSide(
+                                        width: 2, color: Colors.pinkAccent),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],

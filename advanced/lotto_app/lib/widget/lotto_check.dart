@@ -8,8 +8,9 @@ class LottoCheck extends StatefulWidget {
 }
 
 class _LottoCheckState extends State<LottoCheck> {
-  final bool checked = false;
-  Color color = Colors.white;
+  List<bool> checkedList = List.generate(45, (index) => false);
+  List<Color> colorList = List.generate(45, (index) => Colors.white);
+  List<List<int>> numberList = [];
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -23,7 +24,16 @@ class _LottoCheckState extends State<LottoCheck> {
           (index) {
             return InkWell(
               onTap: () {
-                print(index + 1);
+                setState(() {
+                  checkedList[index] = !checkedList[index];
+                  if (checkedList[index]) {
+                    colorList[index] = Colors.black;
+                    numberList.add([index + 1]);
+                  } else {
+                    colorList[index] = Colors.white;
+                    numberList.remove([index + 1]);
+                  }
+                });
               },
               child: Column(
                 children: [
@@ -40,8 +50,8 @@ class _LottoCheckState extends State<LottoCheck> {
                   ),
                   Container(
                     height: 28,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
+                    decoration: BoxDecoration(
+                      color: colorList[index],
                       shape: BoxShape.circle,
                     ),
                     child: Center(
