@@ -1,10 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:lotto_app/inspection.dart';
 import 'package:lotto_app/widget/lotto_check.dart';
 
-class LottoPaper extends StatelessWidget {
+class LottoPaper extends StatefulWidget {
   const LottoPaper({
     super.key,
   });
+
+  @override
+  State<LottoPaper> createState() => _LottoPaperState();
+}
+
+class _LottoPaperState extends State<LottoPaper> {
+  List<List<int>> dataListFromChild = List.generate(5, (_) => []);
+  List<bool> autoCheckedList = List.generate(5, (_) => false);
+  // 콜백 함수를 통해 자식 위젯의 데이터 업데이트
+  void updateChildData(int index, List<int> newData, bool newAutoChecked) {
+    setState(() {
+      dataListFromChild[index] = newData;
+      autoCheckedList[index] = newAutoChecked;
+      print(dataListFromChild);
+      print(autoCheckedList);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +33,12 @@ class LottoPaper extends StatelessWidget {
         child: Row(
           children: [
             Row(
-              children: List.generate(5, (index) => OnePaper(index: index)),
+              children: List.generate(
+                  5,
+                  (index) => OnePaper(
+                        index: index,
+                        callback: updateChildData,
+                      )),
             ),
             Column(
               children: [
@@ -28,7 +51,14 @@ class LottoPaper extends StatelessWidget {
                       shape: const CircleBorder(eccentricity: 0.0),
                       fixedSize: const Size(100, 100),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const Inspection(),
+                        ),
+                      );
+                    },
                     child: const Icon(
                       Icons.arrow_forward,
                       size: 50,
@@ -47,9 +77,11 @@ class LottoPaper extends StatelessWidget {
 
 class OnePaper extends StatefulWidget {
   final int index;
+  final Function(int, List<int>, bool) callback;
 
   const OnePaper({
     required this.index,
+    required this.callback,
     super.key,
   });
 
@@ -63,6 +95,20 @@ class _OnePaperState extends State<OnePaper> {
   bool autoChecked = false;
 
   Color autoColor = Colors.white;
+  List<int> numberList = [];
+
+  // 자식 위젯에서 호출할 콜백 함수
+  void updateData(List<int> newData) {
+    setState(() {
+      // 콜백 함수를 통해 데이터 업데이트
+      numberList = newData;
+      if (numberList.length >= 6) {
+        autoChecked = false;
+        autoColor = Colors.white;
+      }
+      widget.callback(widget.index, numberList, autoChecked);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +178,7 @@ class _OnePaperState extends State<OnePaper> {
                     ),
                   ),
                   const SizedBox(height: 15),
-                  const LottoCheck(),
+                  LottoCheck(callback: updateData),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -149,7 +195,14 @@ class _OnePaperState extends State<OnePaper> {
                         child: InkWell(
                           onTap: () {
                             setState(() {
-                              autoChecked = !autoChecked;
+                              if (numberList.length >= 6) {
+                                autoChecked = false;
+                              } else if (numberList.length < 6) {
+                                autoChecked = !autoChecked;
+                              }
+
+                              widget.callback(
+                                  widget.index, numberList, autoChecked);
                               if (autoChecked) {
                                 autoColor = Colors.black;
                               } else {

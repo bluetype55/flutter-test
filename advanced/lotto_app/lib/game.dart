@@ -9,7 +9,9 @@ class Game extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('select numbers'),
+        centerTitle: true,
       ),
       body: Container(
         color: Colors.white,
