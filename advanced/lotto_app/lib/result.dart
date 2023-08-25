@@ -1,12 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:lotto_app/main.dart';
+import 'package:intl/intl.dart';
 
 class Result extends StatelessWidget {
-  const Result({super.key});
+  final List<int> lottoNum;
+  final List<List<int>> myNum;
+  const Result({
+    required this.lottoNum,
+    required this.myNum,
+    super.key,
+  });
+
+  String rank(List<int> myNum, List<int> lottoNum) {
+    int hits = 0;
+    for (var i = 0; i < lottoNum.length - 1; i++) {
+      if (lottoNum.sublist(0, 6).contains(myNum[i])) {
+        hits++;
+      }
+    }
+    if (hits == 6) {
+      return '1등당첨';
+    } else if (hits == 5 && myNum.contains(lottoNum[lottoNum.length - 1])) {
+      return '2등당첨';
+    } else if (hits == 5) {
+      return '3등당첨';
+    } else if (hits == 4) {
+      return '4등당첨';
+    } else if (hits == 3) {
+      return '5등당첨';
+    }
+    return '낙첨';
+  }
+
+  String _formatNumber(int number) {
+    return number.toString().padLeft(2, '0');
+  }
 
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now().toLocal();
+    List<String> totalRanking = ['', '', '', '', ''];
+    for (var i = 0; i < totalRanking.length; i++) {
+      totalRanking[i] = rank(myNum[i], lottoNum);
+    }
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -36,7 +72,8 @@ class Result extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 5),
-            const Text('2021-02-06 추첨'),
+            Text(
+                '${now.year}-${_formatNumber(now.month)}-${_formatNumber(now.day)} 추첨'),
             const SizedBox(height: 15),
             const Text('당첨번호', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 5),
@@ -46,25 +83,27 @@ class Result extends StatelessWidget {
                 Row(
                   children: List.generate(
                       6,
-                      (index) => const NumberBall(
-                            num: 10,
-                            ballColor: Colors.red,
+                      (index) => NumberBall(
+                            num: lottoNum[index],
+                            ballColor: lottoNumberBallColor(lottoNum[index]),
                             textColor: Colors.white,
                           )),
                 ),
-                const Row(
+                Row(
                   children: [
-                    Icon(Icons.add),
+                    const Icon(Icons.add),
                     NumberBall(
-                        num: 20,
-                        ballColor: Colors.blue,
+                        num: lottoNum[6],
+                        ballColor: lottoNumberBallColor(lottoNum[6]),
                         textColor: Colors.white)
                   ],
                 ),
               ],
             ),
             const SizedBox(height: 15),
-            WinningMsg(winning: true, ranking: 1),
+            WinningMsg(
+              totalRanking: totalRanking,
+            ),
             const SizedBox(height: 25),
             Expanded(
               child: Container(
@@ -80,8 +119,14 @@ class Result extends StatelessWidget {
                   child: Column(
                     children: [
                       Column(
-                        children:
-                            List.generate(5, (index) => Record(index: index)),
+                        children: List.generate(
+                            myNum.length,
+                            (index) => Record(
+                                  ranking: rank(myNum[index], lottoNum),
+                                  index: index,
+                                  myNum: myNum[index],
+                                  lottoNum: lottoNum,
+                                )),
                       ),
                       const SizedBox(height: 15),
                       const Text(
@@ -91,12 +136,7 @@ class Result extends StatelessWidget {
                       const SizedBox(height: 15),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const MyHomePage(),
-                            ),
-                          );
+                          Navigator.popUntil(context, ModalRoute.withName('/'));
                         },
                         child: const Text('처음으로'),
                       ),
@@ -112,12 +152,48 @@ class Result extends StatelessWidget {
   }
 }
 
+Color lottoNumberBallColor(int number) {
+  if (0 < number && number < 10) {
+    return Colors.orangeAccent;
+  } else if (10 <= number && number < 20) {
+    return const Color.fromARGB(255, 68, 174, 245);
+  } else if (20 <= number && number < 30) {
+    return Colors.redAccent;
+  } else if (30 <= number && number < 40) {
+    return Colors.grey;
+  } else {
+    return Colors.lightGreen;
+  }
+}
+
 class Record extends StatelessWidget {
   final int index;
+  final List<int> myNum;
+  final List<int> lottoNum;
+  final String ranking;
   const Record({
     required this.index,
+    required this.ranking,
+    required this.lottoNum,
+    required this.myNum,
     super.key,
   });
+
+  NumberBall makeNumberBall(int num) {
+    if (lottoNum.sublist(0, 6).contains(num)) {
+      return NumberBall(
+        num: num,
+        ballColor: lottoNumberBallColor(num),
+        textColor: Colors.white,
+      );
+    } else {
+      return NumberBall(
+        num: num,
+        ballColor: Colors.white,
+        textColor: Colors.black,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +230,7 @@ class Record extends StatelessWidget {
                 bottom: BorderSide(width: 1, color: Colors.grey.shade400),
               ),
             ),
-            child: const Center(child: Text('낙첨')),
+            child: Center(child: Text(ranking)),
           ),
         ),
         Expanded(
@@ -170,12 +246,8 @@ class Record extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
-                6,
-                (index) => const NumberBall(
-                  num: 10,
-                  ballColor: Colors.white,
-                  textColor: Colors.black,
-                ),
+                myNum.length,
+                (index) => makeNumberBall(myNum[index]),
               ),
             ),
           ),
@@ -186,28 +258,52 @@ class Record extends StatelessWidget {
 }
 
 class WinningMsg extends StatelessWidget {
-  final bool winning;
-  final int ranking;
-  final List<String> winnings = [
-    '2,343,892,944원',
-    '46,708,012원',
-    '1,470,112원',
-    '50,000원',
-    '5,000원'
-  ];
+  final List<String> totalRanking;
+  final List<int> winningsList = [2343892944, 46708012, 1470112, 50000, 5000];
   final List<String> lostMsg = ['아쉽게도,', '낙첨되었습니다.', '', ''];
-  final List<String> winMsg = ['축하합니다!', '총 ', '5,000원', ' 당첨'];
+  final List<String> winMsg = ['축하합니다!', '총 ', '', ' 당첨'];
   WinningMsg({
-    required this.winning,
-    required this.ranking,
+    required this.totalRanking,
     super.key,
   });
+
+  int winCalc(List<String> totalRanking) {
+    int winnings = 0;
+    for (var i = 0; i < totalRanking.length; i++) {
+      if (totalRanking[i] == '1등당첨') {
+        winnings += winningsList[0];
+      }
+      if (totalRanking[i] == '2등당첨') {
+        winnings += winningsList[1];
+      }
+      if (totalRanking[i] == '3등당첨') {
+        winnings += winningsList[2];
+      }
+      if (totalRanking[i] == '4등당첨') {
+        winnings += winningsList[3];
+      }
+      if (totalRanking[i] == '5등당첨') {
+        winnings += winningsList[4];
+      }
+      if (totalRanking[i] == '낙첨') {
+        winnings += 0;
+      }
+    }
+    return winnings;
+  }
 
   @override
   @SemanticsHintOverrides()
   Widget build(BuildContext context) {
-    winMsg[2] = winning ? winnings[ranking - 1] : '';
-    List<String> msg = winning ? winMsg : lostMsg;
+    bool isWin = false;
+    int winnings = 0;
+    NumberFormat numberFormat = NumberFormat('#,###');
+    winnings = winCalc(totalRanking);
+    if (winnings != 0) {
+      isWin = true;
+    }
+    winMsg[2] = isWin ? '${numberFormat.format(winnings)}원' : '';
+    List<String> msg = isWin ? winMsg : lostMsg;
     return Container(
       width: 330,
       height: 90,

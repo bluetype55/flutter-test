@@ -10,10 +10,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Lotto_app',
-      routes: {'/game': (context) => const Game(gameCnt: 1)},
-      home: const MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }
@@ -28,8 +27,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int gameCnt = 0;
 
+  List<int> lottoNumber() {
+    var number = (List.generate(45, (i) => ++i)..shuffle()).sublist(0, 7)
+      ..sort();
+
+    return number;
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<int> lottoNum = lottoNumber();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lotto game'),
@@ -97,6 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(
                     builder: (context) => Game(
                       gameCnt: gameCnt,
+                      lottoNum: lottoNum,
                     ),
                   ),
                 );

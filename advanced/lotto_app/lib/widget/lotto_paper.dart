@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:lotto_app/inspection.dart';
 import 'package:lotto_app/widget/lotto_check.dart';
 
 class LottoPaper extends StatefulWidget {
+  final Function(int index, List<List<int>>, List<bool>) callback;
+  final int index;
   const LottoPaper({
+    required this.index,
+    required this.callback,
     super.key,
   });
 
@@ -19,9 +22,10 @@ class _LottoPaperState extends State<LottoPaper> {
     setState(() {
       dataListFromChild[index] = newData;
       autoCheckedList[index] = newAutoChecked;
-      print(dataListFromChild);
-      print(autoCheckedList);
+      debugPrint('$dataListFromChild');
+      debugPrint('$autoCheckedList');
     });
+    widget.callback(widget.index, dataListFromChild, autoCheckedList);
   }
 
   @override
@@ -33,40 +37,8 @@ class _LottoPaperState extends State<LottoPaper> {
         child: Row(
           children: [
             Row(
-              children: List.generate(
-                  5,
-                  (index) => OnePaper(
-                        index: index,
-                        callback: updateChildData,
-                      )),
-            ),
-            Column(
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 75, vertical: 20),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey.shade300,
-                      shape: const CircleBorder(eccentricity: 0.0),
-                      fixedSize: const Size(100, 100),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const Inspection(),
-                        ),
-                      );
-                    },
-                    child: const Icon(
-                      Icons.arrow_forward,
-                      size: 50,
-                    ),
-                  ),
-                ),
-                const Text('복권 발행'),
-              ],
+              children: List.generate(5,
+                  (index) => OnePaper(index: index, callback: updateChildData)),
             ),
           ],
         ),

@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:lotto_app/result.dart';
 import 'package:lotto_app/widget/lotto_ticket.dart';
 
 class Inspection extends StatelessWidget {
-  const Inspection({super.key});
+  final List<int> lottoNum;
+  final List<List<List<int>>> myNum;
+  final List<List<String>> autoStringList;
+  const Inspection({
+    required this.lottoNum,
+    required this.myNum,
+    required this.autoStringList,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +25,13 @@ class Inspection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 50),
           child: Center(
             child: Column(
-              children: List.generate(2, (index) => const LottoTicket()),
+              children: List.generate(
+                  myNum.length,
+                  (index) => LottoTicket(
+                        lottoNum: lottoNum,
+                        myNum: myNum[index],
+                        autoStringList: autoStringList[index],
+                      )),
             ),
           ),
         ),
