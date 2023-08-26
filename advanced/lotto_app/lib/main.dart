@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Center(
                     child: Text(
                       '$gameCnt회',
-                      style: const TextStyle(fontSize: 54),
+                      style: const TextStyle(fontSize: 30),
                     ),
                   ),
                 ),

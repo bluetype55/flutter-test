@@ -293,7 +293,7 @@ class UniqueInfo extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              '제  1007  회',
+              '제  9999  회',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
