@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
-import 'dart:convert';
-
 import 'package:weather_app/data/my_location.dart';
 import 'package:weather_app/data/network.dart';
 import 'package:weather_app/screens/weather_screen.dart';
@@ -35,11 +31,12 @@ class _LoadingState extends State<Loading> {
     String url =
         'https://api.openweathermap.org/data/2.5/weather?lat=$latitude3&lon=$longtitude3&appid=$apikey&units=metric';
     Network network = Network(url);
-print(url);
+    print(url);
     var weatherData = await network.getJsonData();
-    Navigator.push(context,MaterialPageRoute(builder: (context) {
-          return WeatherScreen(parseWeatherData: weatherData);
-        }));
+    if (!mounted) return;
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return WeatherScreen(parseWeatherData: weatherData);
+    }));
   }
 
   @override
