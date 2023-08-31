@@ -8,3 +8,8 @@ Ctrl+Shift+Z : redo
 Ctrl+Z : undo
 Ctrl+D : copy line
 Shift + F6 : Refactoring
+Alt+Shift : multi cursor
+Alt + left, right arrow head : moving tab 
+Shift + f6 : change variable name
+Ctrl + '+','-' : folding or open code
+Shift + F10  : run

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:weather_app/data/my_location.dart';
 import 'package:weather_app/data/network.dart';
 import 'package:weather_app/screens/weather_screen.dart';
@@ -30,20 +31,30 @@ class _LoadingState extends State<Loading> {
     longtitude3 = myLocation.longtitude2;
     String url =
         'https://api.openweathermap.org/data/2.5/weather?lat=$latitude3&lon=$longtitude3&appid=$apikey&units=metric';
-    Network network = Network(url);
+    String url2 =
+        'https://api.openweathermap.org/data/2.5/air_pollution?lat=$latitude3&lon=$longtitude3&appid=$apikey';
+    Network network = Network(url, url2);
+
     print(url);
+    print(url2);
+
     var weatherData = await network.getJsonData();
+    var airData = await network.getAirData();
     if (!mounted) return;
     Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return WeatherScreen(parseWeatherData: weatherData);
+      return WeatherScreen(
+        parseWeatherData: weatherData,
+        parseAirPollution: airData,
+      );
     }));
   }
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
+      backgroundColor: Colors.amber,
       body: Center(
-        child: ElevatedButton(onPressed: null, child: Text('get my location')),
+        child: SpinKitDoubleBounce(color: Colors.black87, size: 80),
       ),
     );
   }

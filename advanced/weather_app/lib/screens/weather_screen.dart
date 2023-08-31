@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:timer_builder/timer_builder.dart';
+import 'package:weather_app/model/model.dart';
 
 class WeatherScreen extends StatefulWidget {
   final dynamic parseWeatherData;
-  const WeatherScreen({this.parseWeatherData, super.key});
+  final dynamic parseAirPollution;
+  const WeatherScreen(
+      {this.parseWeatherData, this.parseAirPollution, super.key});
 
   @override
   State<WeatherScreen> createState() => _WeatherScreenState();
@@ -15,21 +17,33 @@ class WeatherScreen extends StatefulWidget {
 class _WeatherScreenState extends State<WeatherScreen> {
   late String cityName;
   late int temp2;
+  Model model = Model();
+  late Widget icon;
   var date = DateTime.now();
+  late String des;
+  late Widget airIcon;
+  late Widget airState;
+  late double dust1;
+  late double dust2;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    updateData(widget.parseWeatherData);
+    updateData(widget.parseWeatherData, widget.parseAirPollution);
   }
 
-  void updateData(dynamic weatherData) {
-    double temp = weatherData['main']['temp'];
+  void updateData(dynamic weatherData, dynamic airData) {
+    double temp = weatherData['main']['temp'].toDouble();
     temp2 = temp.round();
     cityName = weatherData['name'];
-
-    print(temp);
-    print(cityName);
+    des = weatherData['weather'][0]['description'];
+    int condition = weatherData['weather'][0]['id'];
+    icon = model.getWeatherIcon(condition);
+    int index = airData['list'][0]['main']['aqi'];
+    airIcon = model.getAirIcon(index);
+    airState = model.getAirCondition(index);
+    dust1 = airData['list'][0]['components']['pm10'].toDouble();
+    dust2 = airData['list'][0]['components']['pm2_5'].toDouble();
   }
 
   String getSystemTime() {
@@ -82,7 +96,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           children: [
                             const SizedBox(height: 150),
                             Text(
-                              'seoul',
+                              '$cityName',
                               style: GoogleFonts.lato(
                                 fontSize: 35,
                                 fontWeight: FontWeight.bold,
@@ -123,7 +137,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '18\u2103',
+                        '$temp2\u2103',
                         style: GoogleFonts.lato(
                           fontSize: 85,
                           fontWeight: FontWeight.w300,
@@ -132,10 +146,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       ),
                       Row(
                         children: [
-                          SvgPicture.asset('svg/climacon-sun.svg'),
-                          SizedBox(width: 10),
+                          icon,
+                          const SizedBox(width: 10),
                           Text(
-                            'clear sky',
+                            des,
                             style: GoogleFonts.lato(
                                 fontSize: 16, color: Colors.white),
                           ),
@@ -145,7 +159,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   ),
                   Column(
                     children: [
-                      Divider(
+                      const Divider(
                         height: 15,
                         thickness: 2,
                         color: Colors.white30,
@@ -160,20 +174,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 style: GoogleFonts.lato(
                                     fontSize: 14, color: Colors.white),
                               ),
-                              SizedBox(height: 10),
-                              Image.asset(
-                                'image/bad.png',
-                                width: 37,
-                                height: 35,
-                              ),
-                              SizedBox(height: 10),
-                              Text(
-                                '"매우나쁨"',
-                                style: GoogleFonts.lato(
-                                    fontSize: 16,
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.bold),
-                              ),
+                              const SizedBox(height: 10),
+                              airIcon,
+                              const SizedBox(height: 10),
+                              airState,
                             ],
                           ),
                           Column(
@@ -183,13 +187,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 style: GoogleFonts.lato(
                                     fontSize: 14, color: Colors.white),
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Text(
-                                '174.75',
+                                '$dust1',
                                 style: GoogleFonts.lato(
                                     fontSize: 24, color: Colors.white),
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Text(
                                 'μg/m3',
                                 style: GoogleFonts.lato(
@@ -206,13 +210,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 style: GoogleFonts.lato(
                                     fontSize: 14, color: Colors.white),
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Text(
-                                '84.03',
+                                '$dust2',
                                 style: GoogleFonts.lato(
                                     fontSize: 24, color: Colors.white),
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Text(
                                 'μg/m3',
                                 style: GoogleFonts.lato(
