@@ -13,3 +13,5 @@ Alt + left, right arrow head : moving tab
 Shift + f6 : change variable name
 Ctrl + '+','-' : folding or open code
 Shift + F10  : run
+Ctrl + Alt + w : extract widget
+Ctrl + Alt + m : extract method
