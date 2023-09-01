@@ -1,4 +1,6 @@
 import 'package:chatting_app/config/palette.dart';
+import 'package:chatting_app/screens/chat_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginSignupScreen extends StatefulWidget {
@@ -9,6 +11,7 @@ class LoginSignupScreen extends StatefulWidget {
 }
 
 class _LoginSignupScreenState extends State<LoginSignupScreen> {
+  final _authentication = FirebaseAuth.instance;
   bool isSignupScreen = true;
   final _formKey = GlobalKey<FormState>();
   String userName = '';
@@ -194,6 +197,9 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                   onSaved: (value) {
                                     userName = value!;
                                   },
+                                  onChanged: (value) {
+                                    userName = value;
+                                  },
                                   decoration: const InputDecoration(
                                     prefixIcon: Icon(
                                       Icons.account_circle,
@@ -224,8 +230,10 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                 const SizedBox(height: 8),
                                 TextFormField(
                                   key: const ValueKey(2),
+                                  keyboardType: TextInputType.emailAddress,
                                   validator: (value) {
-                                    if (value!.isEmpty || value.contains('@')) {
+                                    if (value!.isEmpty ||
+                                        !value.contains('@')) {
                                       return 'Please enter a valid email address';
                                     } else {
                                       return null;
@@ -233,6 +241,9 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                   },
                                   onSaved: (newValue) {
                                     userEmail = newValue!;
+                                  },
+                                  onChanged: (value) {
+                                    userEmail = value;
                                   },
                                   decoration: const InputDecoration(
                                     prefixIcon: Icon(
@@ -264,6 +275,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                 const SizedBox(height: 8),
                                 TextFormField(
                                   key: const ValueKey(3),
+                                  obscureText: true,
                                   validator: (value) {
                                     if (value!.isEmpty || value.length < 6) {
                                       return 'Please must be at least 7 characters long';
@@ -273,6 +285,9 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                   },
                                   onSaved: (newValue) {
                                     userPassword = newValue!;
+                                  },
+                                  onChanged: (value) {
+                                    userPassword = value;
                                   },
                                   decoration: const InputDecoration(
                                     prefixIcon: Icon(
@@ -314,8 +329,10 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                               children: [
                                 TextFormField(
                                   key: const ValueKey(4),
+                                  keyboardType: TextInputType.emailAddress,
                                   validator: (value) {
-                                    if (value!.isEmpty || value.contains('@')) {
+                                    if (value!.isEmpty ||
+                                        !value.contains('@')) {
                                       return 'Please enter a valid email address';
                                     } else {
                                       return null;
@@ -323,6 +340,9 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                   },
                                   onSaved: (newValue) {
                                     userEmail = newValue!;
+                                  },
+                                  onChanged: (value) {
+                                    userEmail = value;
                                   },
                                   decoration: const InputDecoration(
                                     prefixIcon: Icon(
@@ -354,6 +374,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                 const SizedBox(height: 8),
                                 TextFormField(
                                   key: const ValueKey(5),
+                                  obscureText: true,
                                   validator: (value) {
                                     if (value!.isEmpty || value.length < 6) {
                                       return 'Please must be at least 7 characters long';
@@ -363,6 +384,9 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                   },
                                   onSaved: (newValue) {
                                     userPassword = newValue!;
+                                  },
+                                  onChanged: (value) {
+                                    userEmail = value;
                                   },
                                   decoration: const InputDecoration(
                                     prefixIcon: Icon(
@@ -416,7 +440,55 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                     borderRadius: BorderRadius.circular(50),
                   ),
                   child: GestureDetector(
-                    onTap: _tryValidation,
+                    onTap: () async {
+                      if (isSignupScreen) {
+                        try {
+                          _tryValidation();
+                          final newUser = await _authentication
+                              .createUserWithEmailAndPassword(
+                                  email: userEmail, password: userPassword);
+                          if (newUser.user != null) {
+                            if (!context.mounted) return;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChatScreen(),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          print(e);
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('Please check your email and password'),
+                              backgroundColor: Colors.blue,
+                            ),
+                          );
+                        }
+                      }
+                      if (!isSignupScreen) {
+                        _tryValidation();
+
+                        try {
+                          final newUser =
+                              await _authentication.signInWithEmailAndPassword(
+                                  email: userEmail, password: userPassword);
+                          if (newUser.user != null) {
+                            if (!context.mounted) return;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChatScreen(),
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          print(e);
+                        }
+                      }
+                    },
                     child: Container(
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(

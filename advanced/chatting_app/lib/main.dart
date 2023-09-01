@@ -1,7 +1,15 @@
 import 'package:chatting_app/screens/main_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); //플러터 코어 엔진 초기화
+  await Firebase.initializeApp(
+    //파이어베이스 초기화
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
