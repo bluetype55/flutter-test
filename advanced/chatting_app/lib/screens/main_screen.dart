@@ -1,5 +1,5 @@
 import 'package:chatting_app/config/palette.dart';
-import 'package:chatting_app/screens/chat_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -455,14 +455,19 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                             final newUser = await _authentication
                                 .createUserWithEmailAndPassword(
                                     email: userEmail, password: userPassword);
+                            await FirebaseFirestore.instance
+                                .collection('user')
+                                .doc(newUser.user!.uid)
+                                .set(
+                                    {'userName': userName, 'email': userEmail});
                             if (newUser.user != null) {
-                              if (!context.mounted) return;
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const ChatScreen(),
-                                ),
-                              );
+                              // if (!context.mounted) return;
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => const ChatScreen(),
+                              //   ),
+                              // );
                               setState(() {
                                 showSpinner = false;
                               });
@@ -487,15 +492,21 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                 .signInWithEmailAndPassword(
                                     email: userEmail, password: userPassword);
                             if (newUser.user != null) {
-                              if (!context.mounted) return;
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ChatScreen(),
-                                ),
-                              );
+                              // if (!context.mounted) return;
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => ChatScreen(),
+                              //   ),
+                              // );
+                              setState(() {
+                                showSpinner = false;
+                              });
                             }
                           } catch (e) {
+                            setState(() {
+                              showSpinner = false;
+                            });
                             print(e);
                           }
                         }
