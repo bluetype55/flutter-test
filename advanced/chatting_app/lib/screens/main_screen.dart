@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:chatting_app/add_image/add_image.dart';
 import 'package:chatting_app/config/palette.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
@@ -19,12 +23,29 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
   String userName = '';
   String userEmail = '';
   String userPassword = '';
+  File? userPickedImage;
+
+  void pickedImage(File image) {
+    userPickedImage = image;
+  }
 
   void _tryValidation() {
     final isValid = _formKey.currentState!.validate();
     if (isValid) {
       _formKey.currentState!.save();
     }
+  }
+
+  void showAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          child: AddImage(addImageFunc: pickedImage),
+        );
+      },
+    );
   }
 
   @override
@@ -161,19 +182,33 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                               },
                               child: Column(
                                 children: [
-                                  Text(
-                                    'SIGN UP',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: isSignupScreen
-                                          ? Palette.activeColor
-                                          : Palette.textColor1,
-                                    ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'SIGN UP',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: isSignupScreen
+                                              ? Palette.activeColor
+                                              : Palette.textColor1,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 15),
+                                      if (isSignupScreen)
+                                        GestureDetector(
+                                          onTap: () {
+                                            showAlert(context);
+                                          },
+                                          child: const Icon(Icons.image,
+                                              color: Colors.cyan),
+                                        ),
+                                    ],
                                   ),
                                   if (isSignupScreen)
                                     Container(
-                                      margin: const EdgeInsets.only(top: 3),
+                                      margin: const EdgeInsets.fromLTRB(
+                                          0, 3, 35, 0),
                                       height: 2,
                                       width: 55,
                                       color: Colors.orange,
@@ -450,24 +485,43 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                           showSpinner = true;
                         });
                         if (isSignupScreen) {
+                          if (userPickedImage == null) {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text('Please check your image'),
+                              backgroundColor: Colors.blue,
+                            ));
+                            setState(() {
+                              showSpinner = false;
+                            });
+                            return;
+                          }
+                          _tryValidation();
                           try {
-                            _tryValidation();
                             final newUser = await _authentication
                                 .createUserWithEmailAndPassword(
-                                    email: userEmail, password: userPassword);
+                              email: userEmail,
+                              password: userPassword,
+                            );
+
+                            final refImage = FirebaseStorage.instance
+                                .ref()
+                                .child('picked_image')
+                                .child('${newUser.user!.uid}.png');
+                            await refImage.putFile(userPickedImage!);
+
+                            final url = await refImage.getDownloadURL();
+
                             await FirebaseFirestore.instance
                                 .collection('user')
                                 .doc(newUser.user!.uid)
-                                .set(
-                                    {'userName': userName, 'email': userEmail});
+                                .set({
+                              'userName': userName,
+                              'email': userEmail,
+                              'pickedImage': url,
+                            });
                             if (newUser.user != null) {
-                              // if (!context.mounted) return;
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => const ChatScreen(),
-                              //   ),
-                              // );
                               setState(() {
                                 showSpinner = false;
                               });
@@ -492,13 +546,6 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                                 .signInWithEmailAndPassword(
                                     email: userEmail, password: userPassword);
                             if (newUser.user != null) {
-                              // if (!context.mounted) return;
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => ChatScreen(),
-                              //   ),
-                              // );
                               setState(() {
                                 showSpinner = false;
                               });
@@ -541,7 +588,7 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
                 ),
               ), //전송버튼
               AnimatedPositioned(
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 curve: Curves.easeIn,
                 top: isSignupScreen
                     ? MediaQuery.of(context).size.height - 125
