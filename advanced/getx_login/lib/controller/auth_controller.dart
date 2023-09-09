@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,6 +9,7 @@ class AuthController extends GetxController {
   static AuthController instance = Get.find();
   late Rx<User?> _user;
   FirebaseAuth authentication = FirebaseAuth.instance;
+  RxBool showSpinner = false.obs;
 
   @override
   void onReady() {
@@ -21,7 +23,9 @@ class AuthController extends GetxController {
     if (user == null) {
       Get.offAll(LoginPage());
     } else {
-      Get.offAll(WelcomePage());
+      Get.offAll(WelcomePage(
+        user: user,
+      ));
     }
   }
 
@@ -31,6 +35,7 @@ class AuthController extends GetxController {
 
   void login(String email, password) async {
     try {
+      showSpinner.value = true;
       await authentication.signInWithEmailAndPassword(
           email: email, password: password);
     } catch (e) {
@@ -48,13 +53,25 @@ class AuthController extends GetxController {
           style: TextStyle(color: Colors.white),
         ),
       );
+    } finally {
+      showSpinner.value = false; // 로그인 완료 후 스피너 숨김
     }
   }
 
-  void register(String email, password) async {
+  void register(
+      {required String userName,
+      required String email,
+      required String password}) async {
     try {
-      await authentication.createUserWithEmailAndPassword(
+      showSpinner.value = true;
+
+      final newUser = await authentication.createUserWithEmailAndPassword(
           email: email, password: password);
+
+      FirebaseFirestore.instance.collection('user').doc(newUser.user!.uid).set({
+        'userName': userName,
+        'email': email,
+      });
     } catch (e) {
       Get.snackbar(
         'Error',
@@ -70,6 +87,8 @@ class AuthController extends GetxController {
           style: TextStyle(color: Colors.white),
         ),
       );
+    } finally {
+      showSpinner.value = false;
     }
   }
 }

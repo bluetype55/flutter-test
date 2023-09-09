@@ -91,25 +91,33 @@ class LoginPage extends StatelessWidget {
                     AuthController.instance
                         .login(emailController.text, passwordController.text);
                   },
-                  child: Container(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 25.0),
-                      child: Container(
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Center(
-                          child: Text(
-                            'Sign in',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
+                  child: Obx(
+                    () {
+                      if (AuthController.instance.showSpinner.isTrue) {
+                        return CircularProgressIndicator();
+                      } else {
+                        return Container(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 25.0),
+                            child: Container(
+                              padding: EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Center(
+                                child: Text(
+                                  'Sign in',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
+                        );
+                      }
+                    },
                   ),
                 ),
                 SizedBox(

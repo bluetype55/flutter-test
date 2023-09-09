@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:getx_login/controller/auth_controller.dart';
 
 class WelcomePage extends StatelessWidget {
-  const WelcomePage({super.key});
+  final User user;
+  const WelcomePage({required this.user, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +12,7 @@ class WelcomePage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            Text('Welcome!'),
+            Text('Welcome! ${user.email}'),
             IconButton(
                 onPressed: () {
                   AuthController.instance.logout();

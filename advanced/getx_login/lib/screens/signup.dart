@@ -10,6 +10,7 @@ class SignupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var emailController = TextEditingController();
     var passwordController = TextEditingController();
+    var userNameController = TextEditingController();
 
     return Scaffold(
       backgroundColor: Colors.grey[300],
@@ -38,6 +39,27 @@ class SignupPage extends StatelessWidget {
                     style: GoogleFonts.bebasNeue(fontSize: 28)),
                 SizedBox(
                   height: 50,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20.0),
+                      child: TextField(
+                        controller: userNameController,
+                        decoration: InputDecoration(
+                            border: InputBorder.none, hintText: 'Name'),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -84,28 +106,36 @@ class SignupPage extends StatelessWidget {
                 GestureDetector(
                   onTap: () {
                     AuthController.instance.register(
-                        emailController.text, passwordController.text);
+                        email: emailController.text,
+                        password: passwordController.text,
+                        userName: userNameController.text);
                   },
-                  child: Container(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 25.0),
-                      child: Container(
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(12)),
-                        child: Center(
-                          child: Text(
-                            'Sign up',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
+                  child: Obx(() {
+                    if (AuthController.instance.showSpinner.isTrue) {
+                      return CircularProgressIndicator();
+                    } else {
+                      return Container(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 25.0),
+                          child: Container(
+                            padding: EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Center(
+                              child: Text(
+                                'Sign up',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
+                      );
+                    }
+                  }),
                 ),
                 SizedBox(
                   height: 25,
